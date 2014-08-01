@@ -201,7 +201,7 @@ class DwdWeather(object):
                 if "Beschreibung_Stationen" not in filename:
                     continue
                 if self.verbosity > 1:
-                    print(("Reading file %s/%s" % (path, filename)))
+                    print("Reading file %s/%s" % (path, filename))
                 f = io.StringIO()
                 ftp.retrbinary('RETR ' + filename, f.write)
                 self.import_station(f.getvalue())
@@ -291,7 +291,7 @@ class DwdWeather(object):
         CSV -> Sqilte import function.
         """
         if self.verbosity > 0:
-            print(("Importing measures for station %d from FTP server" % station_id))
+            print("Importing measures for station %d from FTP server" % station_id)
         # Which files to import
         timeranges = []
         if latest:
@@ -308,7 +308,7 @@ class DwdWeather(object):
                 timerange = "-"
             data_filename = "data_%s_%s_%s.txt" % (station_id, timerange, cat)
             if self.verbosity > 1:
-                print(("Reading file %s/%s from FTP server" % (path, filename)))
+                print("Reading file %s/%s from FTP server" % (path, filename))
             ftp.retrbinary('RETR ' + filename, open(output_path, 'wb').write)
             with ZipFile(output_path) as myzip:
                 for f in myzip.infolist():
@@ -322,7 +322,7 @@ class DwdWeather(object):
 
         for cat in list(self.categories.keys()):
             if self.verbosity > 1:
-                print(("Handling category %s" % cat))
+                print("Handling category %s" % cat)
             if cat == "solar":
                 path = "%s/%s" % (self.serverpath, cat)
                 ftp.cwd(path)
@@ -336,7 +336,7 @@ class DwdWeather(object):
                         break
                 if filename is None:
                     if self.verbosity > 1:
-                        print(("Station %s has no data for category '%s'" % (station_id, cat)))
+                        print("Station %s has no data for category '%s'" % (station_id, cat))
                     continue
                 else:
                     download_and_import(path, filename, cat)
@@ -357,7 +357,7 @@ class DwdWeather(object):
                             break
                     if filename is None:
                         if self.verbosity > 1:
-                            print(("Station %s has no data for category '%s'" % (station_id, cat)))
+                            print("Station %s has no data for category '%s'" % (station_id, cat))
                         continue
                     download_and_import(path, filename, cat, timerange)
         for item in importfiles:
