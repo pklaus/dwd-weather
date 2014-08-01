@@ -639,6 +639,11 @@ def main():
     parser_weather.add_argument("hour", type=int, help="Time in the form of YYYYMMDDHH")
 
     args = argparser.parse_args()
+    try:
+        a = getattr(args, "func")
+    except AttributeError:
+        argparser.print_help()
+        sys.exit(0)
     args.func(args)
 
 if __name__ == "__main__":
