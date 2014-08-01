@@ -9,7 +9,7 @@ import sqlite3
 from datetime import datetime
 import math
 import re
-import StringIO
+import io
 
 
 """
@@ -201,8 +201,8 @@ class DwdWeather(object):
                 if "Beschreibung_Stationen" not in filename:
                     continue
                 if self.verbosity > 1:
-                    print("Reading file %s/%s" % (path, filename))
-                f = StringIO.StringIO()
+                    print(("Reading file %s/%s" % (path, filename)))
+                f = io.StringIO()
                 ftp.retrbinary('RETR ' + filename, f.write)
                 self.import_station(f.getvalue())
                 f.close()
@@ -229,7 +229,7 @@ class DwdWeather(object):
         for line in content.split("\n"):
             linecount += 1
             line = line.strip()
-            if line == "" or line == u'\x1a':
+            if line == "" or line == '\x1a':
                 continue
             #print linecount, line
             if linecount > 2:
@@ -291,7 +291,7 @@ class DwdWeather(object):
         CSV -> Sqilte import function.
         """
         if self.verbosity > 0:
-            print("Importing measures for station %d from FTP server" % station_id)
+            print(("Importing measures for station %d from FTP server" % station_id))
         # Which files to import
         timeranges = []
         if latest:
@@ -308,7 +308,7 @@ class DwdWeather(object):
                 timerange = "-"
             data_filename = "data_%s_%s_%s.txt" % (station_id, timerange, cat)
             if self.verbosity > 1:
-                print("Reading file %s/%s from FTP server" % (path, filename))
+                print(("Reading file %s/%s from FTP server" % (path, filename)))
             ftp.retrbinary('RETR ' + filename, open(output_path, 'wb').write)
             with ZipFile(output_path) as myzip:
                 for f in myzip.infolist():
@@ -320,9 +320,9 @@ class DwdWeather(object):
                         importfiles.append([cat, self.cachepath + os.sep + data_filename])
             os.remove(output_path)
 
-        for cat in self.categories.keys():
+        for cat in list(self.categories.keys()):
             if self.verbosity > 1:
-                print("Handling category %s" % cat)
+                print(("Handling category %s" % cat))
             if cat == "solar":
                 path = "%s/%s" % (self.serverpath, cat)
                 ftp.cwd(path)
@@ -336,7 +336,7 @@ class DwdWeather(object):
                         break
                 if filename is None:
                     if self.verbosity > 1:
-                        print("Station %s has no data for category '%s'" % (station_id, cat))
+                        print(("Station %s has no data for category '%s'" % (station_id, cat)))
                     continue
                 else:
                     download_and_import(path, filename, cat)
@@ -357,7 +357,7 @@ class DwdWeather(object):
                             break
                     if filename is None:
                         if self.verbosity > 1:
-                            print("Station %s has no data for category '%s'" % (station_id, cat))
+                            print(("Station %s has no data for category '%s'" % (station_id, cat)))
                         continue
                     download_and_import(path, filename, cat, timerange)
         for item in importfiles:
@@ -539,7 +539,7 @@ class DwdWeather(object):
         Return stations list as CSV
         """
         import csv
-        csvfile = StringIO.StringIO()
+        csvfile = io.StringIO()
         # assemble field list
         headers = ["station_id", "date_start", "date_end",
             "geo_lon", "geo_lat", "height", "name"]
@@ -556,7 +556,7 @@ class DwdWeather(object):
                     val = str(val)
                 elif type(val) == float:
                     val = "%.4f" % val
-                elif type(val) == unicode:
+                elif type(val) == str:
                     val = val.encode("utf8")
                 row.append(val)
             writer.writerow(row)
@@ -569,7 +569,7 @@ if __name__ == "__main__":
     def get_station(args):
         dw = DwdWeather(cachepath=args.cachepath, verbosity=args.verbosity)
         import json
-        print json.dumps(dw.nearest_station(lon=args.lon, lat=args.lat), indent=4)
+        print(json.dumps(dw.nearest_station(lon=args.lon, lat=args.lat), indent=4))
 
     def get_stations(args):
         dw = DwdWeather(cachepath=args.cachepath, verbosity=args.verbosity)
@@ -581,7 +581,7 @@ if __name__ == "__main__":
         elif args.type == "plain":
             output = dw.stations_csv(delimiter="\t")
         if args.output_path is None:
-            print output
+            print(output)
         else:
             f = open(args.output_path, "wb")
             f.write(output)
@@ -591,7 +591,7 @@ if __name__ == "__main__":
         hour = datetime.strptime(str(args.hour), "%Y%m%d%H")
         dw = DwdWeather(cachepath=args.cachepath, verbosity=args.verbosity)
         import json
-        print json.dumps(dw.query(args.station_id, hour), indent=4)
+        print(json.dumps(dw.query(args.station_id, hour), indent=4))
 
     import argparse
     argparser = argparse.ArgumentParser(prog="dwdweather",
