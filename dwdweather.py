@@ -202,7 +202,7 @@ class DwdWeather(object):
                     continue
                 if self.verbosity > 1:
                     print("Reading file %s/%s" % (path, filename))
-                f = io.StringIO()
+                f = io.BytesIO()
                 ftp.retrbinary('RETR ' + filename, f.write)
                 self.import_station(f.getvalue())
                 f.close()
@@ -213,10 +213,10 @@ class DwdWeather(object):
         Takes the content of one station metadata file
         and imports it into the database
         """
+        content = content.decode("latin1")
         content = content.strip()
         content = content.replace("\r", "")
         content = content.replace("\n\n", "\n")
-        content = content.decode("latin1")
         insert_sql = """INSERT OR IGNORE INTO stations
             (station_id, date_start, date_end, geo_lon, geo_lat, height, name, state)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
