@@ -371,6 +371,7 @@ class DwdWeather(object):
         """
         f = open(path, "rb")
         content = f.read()
+        content = content.decode("latin1")
         f.close()
         content = content.strip()
         sets = []
